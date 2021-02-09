@@ -1,5 +1,6 @@
 package pl.devapo.azer.bestcommerce.signin.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +9,6 @@ import org.springframework.stereotype.Service;
 import pl.devapo.azer.bestcommerce.signin.model.MerchantDto;
 import pl.devapo.azer.bestcommerce.signin.service.MerchantListener;
 import pl.devapo.azer.bestcommerce.signin.service.MerchantService;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ class MerchantListenerImpl implements MerchantListener {
         log.debug("Received new message from merchant register queue");
         try {
             merchantService.create(objectMapper.readValue(message, MerchantDto.class));
-        } catch (IOException e) {
+        } catch (JsonProcessingException e) {
             log.error("Could not map merchant message: {}", message, e);
         }
     }

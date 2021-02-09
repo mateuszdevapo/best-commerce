@@ -1,6 +1,9 @@
 package pl.devapo.azer.bestcommerce.signup.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import pl.devapo.azer.bestcommerce.signup.entity.Merchant;
 import pl.devapo.azer.bestcommerce.signup.validation.ValidPassword;
 
@@ -15,20 +18,10 @@ import javax.validation.constraints.NotNull;
 public class MerchantDto {
 
     private Long id;
-    @NotNull
-    @NotEmpty
     private String type;
-    @NotNull
-    @NotEmpty
     private String name;
-    @NotNull
-    @NotEmpty
     private String ownerName;
-    @NotNull
-    @NotEmpty
     private String address;
-    @NotNull
-    @NotEmpty
     private String phoneNumber;
     @NotNull
     @NotEmpty
@@ -51,5 +44,4 @@ public class MerchantDto {
                 .password(entity.getPassword())
                 .build();
     }
-
 }
