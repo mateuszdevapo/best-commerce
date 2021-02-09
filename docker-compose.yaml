@@ -1,0 +1,39 @@
+version: '3'
+services:
+  activemq:
+    image: webcenter/activemq:5.14.3
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    ports:
+      - "8161:8161"
+      - "61616:61616"
+      - "61613:61613"
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: best_commerce
+    ports:
+      - "5432:5432"
+  sign-up:
+    build:
+      context: ./sign-up
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/best_commerce
+    links:
+      - activemq
+      - db
+    ports:
+    - "8080:8080"
+  sign-in:
+    build:
+      context: ./sign-in
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/best_commerce
+    links:
+      - activemq
+      - db
+    ports:
+      - "8081:8080"
