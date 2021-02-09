@@ -2,12 +2,14 @@ package pl.devapo.azer.bestcommerce.signup.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.devapo.azer.bestcommerce.signup.entity.Merchant;
 import pl.devapo.azer.bestcommerce.signup.exception.UserAlreadyExistException;
 import pl.devapo.azer.bestcommerce.signup.model.MerchantDto;
 import pl.devapo.azer.bestcommerce.signup.repository.MerchantRepository;
+import pl.devapo.azer.bestcommerce.signup.service.EventPublisher;
 import pl.devapo.azer.bestcommerce.signup.service.MerchantService;
 
 @Service
@@ -15,7 +17,10 @@ import pl.devapo.azer.bestcommerce.signup.service.MerchantService;
 @Slf4j
 class MerchantServiceImpl implements MerchantService {
     private final MerchantRepository merchantRepository;
+    private final EventPublisher eventPublisher;
     private final PasswordEncoder encoder;
+    @Value("${queue.register-merchant}")
+    private String QUEUE_NAME;
 
     public MerchantDto create(MerchantDto dto) {
         if (merchantExists(dto)) {
@@ -23,7 +28,9 @@ class MerchantServiceImpl implements MerchantService {
             throw new UserAlreadyExistException();
         }
         Merchant entity = merchantRepository.save(toEntity(dto));
-        return MerchantDto.of(entity);
+        MerchantDto merchantDto = MerchantDto.of(entity);
+        eventPublisher.publish(QUEUE_NAME, merchantDto);
+        return merchantDto;
     }
 
     private boolean merchantExists(MerchantDto dto) {
